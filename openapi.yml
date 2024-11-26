@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Conways Game of Life
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /v1/risk:
+    get:
+      summary: Get a list risks
+      responses:
+        "200":
+          description: A list of risks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RiskRecord"
+    post:
+      summary: Create a new risk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/RiskProperties"
+              required:
+                - state
+
+      responses:
+        "201":
+          description: Risk created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskRecord"
+  /v1/risk/{id}:
+    get:
+      summary: Get a risk by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: A risk
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskRecord"
+
+components:
+  schemas:
+    RiskProperties:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [open, closed, accepted, investigating]
+        title:
+          type: string
+        description:
+          type: string
+    RiskRecord:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: "#/components/schemas/RiskProperties"
